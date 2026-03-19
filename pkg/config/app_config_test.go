@@ -15,9 +15,17 @@ func TestDockerComposeCommandNoFiles(t *testing.T) {
 	}
 
 	actual := conf.UserConfig.CommandTemplates.DockerCompose
-	expected := "docker compose"
+	expected := "podman compose"
 	if actual != expected {
 		t.Fatalf("Expected %s but got %s", expected, actual)
+	}
+
+	if conf.UserConfig.CommandTemplates.PodmanCompose != expected {
+		t.Fatalf("Expected %s but got %s", expected, conf.UserConfig.CommandTemplates.PodmanCompose)
+	}
+
+	if conf.UserConfig.CommandTemplates.Podman != "podman" {
+		t.Fatalf("Expected podman but got %s", conf.UserConfig.CommandTemplates.Podman)
 	}
 }
 
@@ -29,7 +37,7 @@ func TestDockerComposeCommandSingleFile(t *testing.T) {
 	}
 
 	actual := conf.UserConfig.CommandTemplates.DockerCompose
-	expected := "docker compose -f one.yml"
+	expected := "podman compose -f one.yml"
 	if actual != expected {
 		t.Fatalf("Expected %s but got %s", expected, actual)
 	}
@@ -43,7 +51,7 @@ func TestDockerComposeCommandMultipleFiles(t *testing.T) {
 	}
 
 	actual := conf.UserConfig.CommandTemplates.DockerCompose
-	expected := "docker compose -f one.yml -f two.yml -f three.yml"
+	expected := "podman compose -f one.yml -f two.yml -f three.yml"
 	if actual != expected {
 		t.Fatalf("Expected %s but got %s", expected, actual)
 	}

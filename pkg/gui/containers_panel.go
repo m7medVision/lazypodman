@@ -9,13 +9,13 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/fatih/color"
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazydocker/pkg/commands"
-	"github.com/jesseduffield/lazydocker/pkg/config"
-	"github.com/jesseduffield/lazydocker/pkg/gui/panels"
-	"github.com/jesseduffield/lazydocker/pkg/gui/presentation"
-	"github.com/jesseduffield/lazydocker/pkg/gui/types"
-	"github.com/jesseduffield/lazydocker/pkg/tasks"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/commands"
+	"github.com/mohammed/lazypodman/pkg/config"
+	"github.com/mohammed/lazypodman/pkg/gui/panels"
+	"github.com/mohammed/lazypodman/pkg/gui/presentation"
+	"github.com/mohammed/lazypodman/pkg/gui/types"
+	"github.com/mohammed/lazypodman/pkg/tasks"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/samber/lo"
 )
 
@@ -458,7 +458,7 @@ func (gui *Gui) containerExecShell(container *commands.Container) error {
 	})
 
 	// TODO: use SDK
-	resolvedCommand := utils.ApplyTemplate("docker exec -it {{ .Container.ID }} /bin/sh -c 'eval $(grep ^$(id -un): /etc/passwd | cut -d : -f 7-)'", commandObject)
+	resolvedCommand := utils.ApplyTemplate("{{ .Podman }} exec -it {{ .Container.ID }} /bin/sh -c 'eval $(grep ^$(id -un): /etc/passwd | cut -d : -f 7-)'", commandObject)
 	// attach and return the subprocess error
 	cmd := gui.OSCommand.ExecutableFromString(resolvedCommand)
 	return gui.runSubprocess(cmd)

@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	ogLog "log"
 	"os"
 	"os/exec"
@@ -21,10 +23,10 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/imdario/mergo"
-	"github.com/jesseduffield/lazydocker/pkg/commands/ssh"
-	"github.com/jesseduffield/lazydocker/pkg/config"
-	"github.com/jesseduffield/lazydocker/pkg/i18n"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/commands/ssh"
+	"github.com/mohammed/lazypodman/pkg/config"
+	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/sasha-s/go-deadlock"
 	"github.com/sirupsen/logrus"
 )
@@ -32,6 +34,13 @@ import (
 const (
 	dockerHostEnvKey = "DOCKER_HOST"
 )
+
+var composeFileStat = os.Stat
+
+var composeServiceLabelKeys = []string{"com.docker.compose.service", "io.podman.compose.service"}
+var composeProjectLabelKeys = []string{"com.docker.compose.project", "io.podman.compose.project"}
+var composeContainerNumberLabelKeys = []string{"com.docker.compose.container", "io.podman.compose.container-number"}
+var composeOneOffLabelKeys = []string{"com.docker.compose.oneoff", "io.podman.compose.oneoff"}
 
 // DockerCommand is our main docker interface
 type DockerCommand struct {
@@ -59,6 +68,8 @@ type LimitedDockerCommand interface {
 
 // CommandObject is what we pass to our template resolvers when we are running a custom command. We do not guarantee that all fields will be populated: just the ones that make sense for the current context
 type CommandObject struct {
+	Podman        string
+	PodmanCompose string
 	DockerCompose string
 	Service       *Service
 	Container     *Container
@@ -70,18 +81,76 @@ type CommandObject struct {
 
 // NewCommandObject takes a command object and returns a default command object with the passed command object merged in
 func (c *DockerCommand) NewCommandObject(obj CommandObject) CommandObject {
-	defaultObj := CommandObject{DockerCompose: c.Config.UserConfig.CommandTemplates.DockerCompose}
+	defaultObj := CommandObject{
+		Podman:        c.Config.UserConfig.CommandTemplates.Podman,
+		PodmanCompose: c.Config.UserConfig.CommandTemplates.PodmanCompose,
+		DockerCompose: c.Config.UserConfig.CommandTemplates.DockerCompose,
+	}
 	_ = mergo.Merge(&defaultObj, obj)
 
 	// When operating on a specific project, include -p flag so that
-	// docker compose targets the correct project.
+	// the compose command targets the correct project.
 	if obj.Service != nil && obj.Service.ProjectName != "" {
-		defaultObj.DockerCompose = fmt.Sprintf("%s -p %s", defaultObj.DockerCompose, obj.Service.ProjectName)
+		defaultObj.PodmanCompose = fmt.Sprintf("%s -p %s", defaultObj.PodmanCompose, obj.Service.ProjectName)
 	} else if obj.Project != nil && obj.Project.Name != "" {
-		defaultObj.DockerCompose = fmt.Sprintf("%s -p %s", defaultObj.DockerCompose, obj.Project.Name)
+		defaultObj.PodmanCompose = fmt.Sprintf("%s -p %s", defaultObj.PodmanCompose, obj.Project.Name)
 	}
 
+	defaultObj.DockerCompose = defaultObj.PodmanCompose
+
 	return defaultObj
+}
+
+func firstLabelValue(labels map[string]string, keys ...string) string {
+	for _, key := range keys {
+		if value := labels[key]; value != "" {
+			return value
+		}
+	}
+
+	return ""
+}
+
+func labelIsTrue(labels map[string]string, keys ...string) bool {
+	value := strings.ToLower(firstLabelValue(labels, keys...))
+	return value == "true" || value == "1" || value == "yes"
+}
+
+func deriveLocalProjectName(config *config.AppConfig) string {
+	if config.ProjectName != "" {
+		return config.ProjectName
+	}
+
+	if config.ProjectDir == "" {
+		return ""
+	}
+
+	return filepath.Base(config.ProjectDir)
+}
+
+func hasComposeFile(projectDir string) bool {
+	if projectDir == "" {
+		return false
+	}
+
+	for _, name := range []string{"compose.yml", "compose.yaml", "docker-compose.yml", "docker-compose.yaml", "podman-compose.yml", "podman-compose.yaml"} {
+		if _, err := composeFileStat(filepath.Join(projectDir, name)); err == nil {
+			return true
+		} else if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return false
+		}
+	}
+
+	return false
+}
+
+func inferComposeProject(config *config.AppConfig) (bool, string) {
+	localProjectName := deriveLocalProjectName(config)
+	if config.ProjectName != "" || strings.Contains(config.UserConfig.CommandTemplates.PodmanCompose, " -f ") || hasComposeFile(config.ProjectDir) {
+		return true, localProjectName
+	}
+
+	return false, localProjectName
 }
 
 // newDockerClient creates a Docker client with the given host.
@@ -90,7 +159,7 @@ func (c *DockerCommand) NewCommandObject(obj CommandObject) CommandObject {
 // negotiation even when WithAPIVersionNegotiation() is specified.
 // Instead, we explicitly configure only what we need, and rely on proper
 // API version negotiation to support older Docker daemons.
-// See https://github.com/jesseduffield/lazydocker/issues/715
+// See https://github.com/mohammed/lazypodman/issues/715
 func newDockerClient(dockerHost string) (*client.Client, error) {
 	return client.NewClientWithOpts(
 		client.WithTLSClientConfigFromEnv(),
@@ -158,14 +227,14 @@ func NewDockerCommand(log *logrus.Entry, osCommand *OSCommand, tr *i18n.Translat
 }
 
 func (c *DockerCommand) setDockerComposeCommand(config *config.AppConfig) {
-	if config.UserConfig.CommandTemplates.DockerCompose != "docker compose" {
+	if config.UserConfig.CommandTemplates.PodmanCompose != "podman compose" {
 		return
 	}
 
-	// it's possible that a user is still using docker-compose, so we'll check if 'docker comopose' is available, and if not, we'll fall back to 'docker-compose'
-	err := c.OSCommand.RunCommand("docker compose version")
+	err := c.OSCommand.RunCommand("podman compose version")
 	if err != nil {
-		config.UserConfig.CommandTemplates.DockerCompose = "docker-compose"
+		config.UserConfig.CommandTemplates.PodmanCompose = "podman compose"
+		config.UserConfig.CommandTemplates.DockerCompose = config.UserConfig.CommandTemplates.PodmanCompose
 	}
 }
 
@@ -246,9 +315,9 @@ func (c *DockerCommand) RefreshContainersAndServices(currentContainers []*Contai
 				break
 			}
 		}
-		// Fall back to directory name
-		if c.LocalProjectName == "" && c.Config.ProjectDir != "" {
-			c.LocalProjectName = filepath.Base(c.Config.ProjectDir)
+		// Fall back to configured project identity
+		if c.LocalProjectName == "" {
+			c.LocalProjectName = deriveLocalProjectName(c.Config)
 		}
 	}
 
@@ -400,10 +469,10 @@ func (c *DockerCommand) GetContainers(existingContainers []*Container) ([]*Conta
 				newContainer.Name = ctr.ID
 			}
 		}
-		newContainer.ServiceName = ctr.Labels["com.docker.compose.service"]
-		newContainer.ProjectName = ctr.Labels["com.docker.compose.project"]
-		newContainer.ContainerNumber = ctr.Labels["com.docker.compose.container"]
-		newContainer.OneOff = ctr.Labels["com.docker.compose.oneoff"] == "True"
+		newContainer.ServiceName = firstLabelValue(ctr.Labels, composeServiceLabelKeys...)
+		newContainer.ProjectName = firstLabelValue(ctr.Labels, composeProjectLabelKeys...)
+		newContainer.ContainerNumber = firstLabelValue(ctr.Labels, composeContainerNumberLabelKeys...)
+		newContainer.OneOff = labelIsTrue(ctr.Labels, composeOneOffLabelKeys...)
 
 		ownContainers[i] = newContainer
 	}
@@ -419,7 +488,7 @@ func (c *DockerCommand) GetServices() ([]*Service, error) {
 		return nil, nil
 	}
 
-	composeCommand := c.Config.UserConfig.CommandTemplates.DockerCompose
+	composeCommand := c.Config.UserConfig.CommandTemplates.PodmanCompose
 	output, err := c.OSCommand.RunCommandWithOutput(fmt.Sprintf("%s config --services", composeCommand))
 	if err != nil {
 		return nil, err
@@ -533,7 +602,7 @@ func determineDockerHost() (string, error) {
 		// If a docker context is neither specified via the "DOCKER_CONTEXT" environment variable nor via the
 		// $HOME/.docker/config file, then we fall back to connecting to the "default docker host" meant for
 		// the host operating system.
-		return defaultDockerHost, nil
+		return resolveDefaultDockerHost(), nil
 	}
 
 	storeConfig := ctxstore.NewConfig(
@@ -565,5 +634,5 @@ func determineDockerHost() (string, error) {
 	// docker context create foo --docker "host="
 	// ```
 	// In such scenario, we mimic the `docker` cli and try to connect to the "default docker host".
-	return defaultDockerHost, nil
+	return resolveDefaultDockerHost(), nil
 }

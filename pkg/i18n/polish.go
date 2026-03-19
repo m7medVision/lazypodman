@@ -10,11 +10,11 @@ func polishSet() TranslationSet {
 
 		NoViewMachingNewLineFocusedSwitchStatement: "Żaden widok nie odpowiada instrukcji przełączenia newLineFocused",
 
-		ErrorOccurred:                     "Wystąpił błąd! Proszę go zgłosić na https://github.com/jesseduffield/lazydocker/issues",
-		ConnectionFailed:                  "Błąd połączenia z Dockerem. Być może należy go zrestartować.",
-		UnattachableContainerError:        "Kontener nie obsługuje przyczepiania (attach). Musisz albo użyć flag '-it', albo `stdin_open: true, tty: true` w pliku docker-compose.yml.",
+		ErrorOccurred:                     "Wystąpił błąd! Proszę go zgłosić na https://github.com/mohammed/lazypodman/issues",
+		ConnectionFailed:                  "Błąd połączenia z Podmanem. Być może należy go zrestartować.",
+		UnattachableContainerError:        "Kontener nie obsługuje przyczepiania (attach). Musisz albo użyć flag '-it', albo `stdin_open: true, tty: true` w pliku compose.yml.",
 		CannotAttachStoppedContainerError: "Nie można przyczepić się do zatrzymanego kontenera, należy go najpierw uruchomić (co można wykonać wciskając przycisk 'r')",
-		CannotAccessDockerSocketError:     "Nie udało się uzyskać dostępu do unix:///var/run/docker.sock\nUruchom program jako root lub przeczytaj https://docs.docker.com/install/linux/linux-postinstall/",
+		CannotAccessDockerSocketError:     "Nie udało się uzyskać dostępu do unix:///var/run/podman.sock\nUruchom program jako root lub przeczytaj https://docs.podman.com/install/linux/linux-postinstall/",
 
 		Donate:  "Dotacja",
 		Confirm: "Potwierdź",
@@ -67,7 +67,7 @@ func polishSet() TranslationSet {
 		LogsTitle:                 "Logi",
 		ConfigTitle:               "Konfiguracja",
 		EnvTitle:                  "Env",
-		DockerComposeConfigTitle:  "Konfiguracja docker-compose",
+		DockerComposeConfigTitle:  "Konfiguracja podman compose",
 		TopTitle:                  "Top",
 		StatsTitle:                "Staty",
 		CreditsTitle:              "O",
@@ -91,7 +91,7 @@ func polishSet() TranslationSet {
 		ConfirmPruneNetworks:        "Na pewno wyczyścić wszystkie nieużywane sieci?",
 		StopService:                 "Na pewno zatrzymać kontenery tego serwisu?",
 		StopContainer:               "Na pewno zatrzymać ten kontener?",
-		PressEnterToReturn:          "Wciśnij enter aby powrócić do lazydockera (ten komunikat może być wyłączony w konfiguracji poprzez ustawienie `gui.returnImmediately: true`)",
+		PressEnterToReturn:          "Wciśnij enter aby powrócić do lazypodmana (ten komunikat może być wyłączony w konfiguracji poprzez ustawienie `gui.returnImmediately: true`)",
 		DetachFromContainerShortCut: "Domyślnie, aby odłączyć się od kontenera, naciśnij ctrl-p, a następnie ctrl-q",
 	}
 }

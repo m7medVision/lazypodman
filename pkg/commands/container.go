@@ -10,8 +10,8 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/go-errors/errors"
-	"github.com/jesseduffield/lazydocker/pkg/i18n"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/sasha-s/go-deadlock"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
@@ -104,7 +104,9 @@ func (c *Container) Attach() (*exec.Cmd, error) {
 
 	c.Log.Warn(fmt.Sprintf("attaching to container %s", c.Name))
 	// TODO: use SDK
-	cmd := c.OSCommand.NewCmd("docker", "attach", "--sig-proxy=false", c.ID)
+	resolvedCommand := utils.ApplyTemplate("{{ .Podman }} attach --sig-proxy=false {{ .Container.ID }}", c.DockerCommand.NewCommandObject(CommandObject{Container: c}))
+	cmd := c.OSCommand.ExecutableFromString(resolvedCommand)
+	c.OSCommand.PrepareForChildren(cmd)
 	return cmd, nil
 }
 

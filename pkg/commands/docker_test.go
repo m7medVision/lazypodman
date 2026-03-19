@@ -2,16 +2,18 @@ package commands
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/docker/docker/client"
+	"github.com/mohammed/lazypodman/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
 // TestNewDockerClientVersionNegotiation verifies that newDockerClient allows
 // API version negotiation even when DOCKER_API_VERSION is set.
 //
-// This is a regression test for https://github.com/jesseduffield/lazydocker/issues/715
+// This is a regression test for https://github.com/mohammed/lazypodman/issues/715
 // where users got "client version 1.25 is too old" errors because FromEnv()
 // includes WithVersionFromEnv() which sets manualOverride=true, preventing
 // API version negotiation.
@@ -60,4 +62,34 @@ func TestNewDockerClientVersionNegotiation(t *testing.T) {
 		assert.NotEqual(t, "1.25", cli.ClientVersion(),
 			"client version should not be locked to DOCKER_API_VERSION env var")
 	})
+}
+
+func TestFirstLabelValueSupportsPodmanFallback(t *testing.T) {
+	labels := map[string]string{"io.podman.compose.service": "api"}
+	assert.Equal(t, "api", firstLabelValue(labels, composeServiceLabelKeys...))
+}
+
+func TestLabelIsTrueSupportsMultipleFormats(t *testing.T) {
+	assert.True(t, labelIsTrue(map[string]string{"io.podman.compose.oneoff": "true"}, composeOneOffLabelKeys...))
+	assert.True(t, labelIsTrue(map[string]string{"com.docker.compose.oneoff": "True"}, composeOneOffLabelKeys...))
+	assert.False(t, labelIsTrue(map[string]string{}, composeOneOffLabelKeys...))
+}
+
+func TestInferComposeProjectUsesLocalComposeFiles(t *testing.T) {
+	tempDir := t.TempDir()
+	composePath := filepath.Join(tempDir, "compose.yaml")
+	if err := os.WriteFile(composePath, []byte("services: {}\n"), 0o644); err != nil {
+		t.Fatalf("write compose file: %v", err)
+	}
+
+	appConfig := &config.AppConfig{
+		ProjectDir: tempDir,
+		UserConfig: &config.UserConfig{
+			CommandTemplates: config.CommandTemplatesConfig{PodmanCompose: "podman compose"},
+		},
+	}
+
+	inProject, localName := inferComposeProject(appConfig)
+	assert.True(t, inProject)
+	assert.Equal(t, filepath.Base(tempDir), localName)
 }

@@ -53,9 +53,9 @@ func (self *SSHHandler) HandleSSHDockerHost() (io.Closer, error) {
 		return noopCloser{}, nil
 	}
 
-	// if the docker host scheme is "ssh", forward the docker socket before creating the client
+	// if the docker host scheme is "ssh", forward the Podman-compatible socket before creating the client
 	if u.Scheme == "ssh" {
-		tunnel, err := self.createDockerHostTunnel(ctx, u.Host)
+		tunnel, err := self.createDockerHostTunnel(ctx, u)
 		if err != nil {
 			return noopCloser{}, fmt.Errorf("tunnel ssh docker host: %w", err)
 		}
@@ -85,14 +85,34 @@ func (t *tunneledDockerHost) Close() error {
 	return t.oSCommand.Kill(t.cmd)
 }
 
-func (self *SSHHandler) createDockerHostTunnel(ctx context.Context, remoteHost string) (*tunneledDockerHost, error) {
+func defaultRemoteSocketPath() string {
+	if socketPath := os.Getenv("PODMAN_SSH_SOCKET"); socketPath != "" {
+		return socketPath
+	}
+
+	return "/run/podman/podman.sock"
+}
+
+func remoteSocketPath(u *url.URL) string {
+	if u.Path != "" && u.Path != "/" {
+		return u.Path
+	}
+
+	return defaultRemoteSocketPath()
+}
+
+func remoteHostTarget(u *url.URL) string {
+	return u.Host
+}
+
+func (self *SSHHandler) createDockerHostTunnel(ctx context.Context, dockerHostURL *url.URL) (*tunneledDockerHost, error) {
 	socketDir, err := self.tempDir("/tmp", "lazydocker-sshtunnel-")
 	if err != nil {
 		return nil, fmt.Errorf("create ssh tunnel tmp file: %w", err)
 	}
 	localSocket := path.Join(socketDir, "dockerhost.sock")
 
-	cmd, err := self.tunnelSSH(ctx, remoteHost, localSocket)
+	cmd, err := self.tunnelSSH(ctx, remoteHostTarget(dockerHostURL), remoteSocketPath(dockerHostURL), localSocket)
 	if err != nil {
 		return nil, fmt.Errorf("tunnel docker host over ssh: %w", err)
 	}
@@ -148,8 +168,8 @@ func (self *SSHHandler) tryDial(ctx context.Context, socketPath string) error {
 	return nil
 }
 
-func (self *SSHHandler) tunnelSSH(ctx context.Context, host, localSocket string) (*exec.Cmd, error) {
-	cmd := exec.CommandContext(ctx, "ssh", "-L", localSocket+":/var/run/docker.sock", host, "-N")
+func (self *SSHHandler) tunnelSSH(ctx context.Context, host, remoteSocket, localSocket string) (*exec.Cmd, error) {
+	cmd := exec.CommandContext(ctx, "ssh", "-L", localSocket+":"+remoteSocket, host, "-N")
 	self.oSCommand.PrepareForChildren(cmd)
 	err := self.startCmd(cmd)
 	if err != nil {

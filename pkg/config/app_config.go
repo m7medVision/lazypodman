@@ -41,9 +41,9 @@ type UserConfig struct {
 
 	// CustomCommands determines what shows up in your custom commands menu when
 	// you press 'c'. You can use go templates to access three items on the
-	// struct: the DockerCompose command (defaulted to 'docker-compose'), the
-	// Service if present, and the Container if present. The struct types for
-	// those are found in the commands package
+	// struct: the Podman command, the PodmanCompose command, the Service if
+	// present, and the Container if present. The struct types for those are found
+	// in the commands package
 	CustomCommands CustomCommands `yaml:"customCommands,omitempty"`
 
 	// BulkCommands are commands that apply to all items in a panel e.g.
@@ -147,6 +147,10 @@ type GuiConfig struct {
 // CommandTemplatesConfig determines what commands actually get called when we
 // run certain commands
 type CommandTemplatesConfig struct {
+	// Podman is for your base Podman command and is exposed as .Podman in command
+	// templates.
+	Podman string `yaml:"podman,omitempty"`
+
 	// RestartService is for restarting a service. docker-compose restart {{
 	// .Service.Name }} works but I prefer docker-compose up --force-recreate {{
 	// .Service.Name }}
@@ -166,13 +170,16 @@ type CommandTemplatesConfig struct {
 	// downs and removes volumes
 	DownWithVolumes string `yaml:"downWithVolumes,omitempty"`
 
-	// DockerCompose is for your docker-compose command. You may want to combine a
-	// few different docker-compose.yml files together, in which case you can set
-	// this to "docker compose -f foo/docker-compose.yml -f
-	// bah/docker-compose.yml". The reason that the other docker-compose command
-	// templates all start with {{ .DockerCompose }} is so that they can make use
-	// of whatever you've set in this value rather than you having to copy and
-	// paste it to all the other commands
+	// PodmanCompose is for your compose command. You may want to combine a few
+	// different compose files together, in which case you can set this to
+	// "podman compose -f foo/compose.yml -f bar/compose.yml". The reason that the
+	// other compose command templates all start with {{ .PodmanCompose }} is so
+	// that they can make use of whatever you've set in this value rather than you
+	// having to copy and paste it to all the other commands.
+	PodmanCompose string `yaml:"podmanCompose,omitempty"`
+
+	// DockerCompose is kept as a legacy alias for older configs. New defaults and
+	// docs should use PodmanCompose instead.
 	DockerCompose string `yaml:"dockerCompose,omitempty"`
 
 	// StopService is the command for stopping a service
@@ -385,23 +392,24 @@ func GetDefaultConfig() UserConfig {
 			Tail:       "",
 		},
 		CommandTemplates: CommandTemplatesConfig{
-			DockerCompose:            "docker compose",
-			RestartService:           "{{ .DockerCompose }} restart {{ .Service.Name }}",
-			StartService:             "{{ .DockerCompose }} start {{ .Service.Name }}",
-			Up:                       "{{ .DockerCompose }} up -d",
-			Down:                     "{{ .DockerCompose }} down",
-			DownWithVolumes:          "{{ .DockerCompose }} down --volumes",
-			UpService:                "{{ .DockerCompose }} up -d {{ .Service.Name }}",
-			RebuildService:           "{{ .DockerCompose }} up -d --build {{ .Service.Name }}",
-			RecreateService:          "{{ .DockerCompose }} up -d --force-recreate {{ .Service.Name }}",
-			StopService:              "{{ .DockerCompose }} stop {{ .Service.Name }}",
-			ServiceLogs:              "{{ .DockerCompose }} logs --since=60m --follow {{ .Service.Name }}",
-			ViewServiceLogs:          "{{ .DockerCompose }} logs --follow {{ .Service.Name }}",
-			AllLogs:                  "{{ .DockerCompose }} logs --tail=300 --follow",
-			ViewAllLogs:              "{{ .DockerCompose }} logs",
-			DockerComposeConfig:      "{{ .DockerCompose }} config",
-			CheckDockerComposeConfig: "{{ .DockerCompose }} config --quiet",
-			ServiceTop:               "{{ .DockerCompose }} top {{ .Service.Name }}",
+			Podman:                   "podman",
+			PodmanCompose:            "podman compose",
+			RestartService:           "{{ .PodmanCompose }} restart {{ .Service.Name }}",
+			StartService:             "{{ .PodmanCompose }} start {{ .Service.Name }}",
+			Up:                       "{{ .PodmanCompose }} up -d",
+			Down:                     "{{ .PodmanCompose }} down",
+			DownWithVolumes:          "{{ .PodmanCompose }} down --volumes",
+			UpService:                "{{ .PodmanCompose }} up -d {{ .Service.Name }}",
+			RebuildService:           "{{ .PodmanCompose }} up -d --build {{ .Service.Name }}",
+			RecreateService:          "{{ .PodmanCompose }} up -d --force-recreate {{ .Service.Name }}",
+			StopService:              "{{ .PodmanCompose }} stop {{ .Service.Name }}",
+			ServiceLogs:              "{{ .PodmanCompose }} logs --since=60m --follow {{ .Service.Name }}",
+			ViewServiceLogs:          "{{ .PodmanCompose }} logs --follow {{ .Service.Name }}",
+			AllLogs:                  "{{ .PodmanCompose }} logs --tail=300 --follow",
+			ViewAllLogs:              "{{ .PodmanCompose }} logs",
+			DockerComposeConfig:      "{{ .PodmanCompose }} config",
+			CheckDockerComposeConfig: "{{ .PodmanCompose }} config --quiet",
+			ServiceTop:               "{{ .PodmanCompose }} top {{ .Service.Name }}",
 		},
 		CustomCommands: CustomCommands{
 			Containers: []CustomCommand{},
@@ -413,42 +421,42 @@ func GetDefaultConfig() UserConfig {
 			Services: []CustomCommand{
 				{
 					Name:    "up",
-					Command: "{{ .DockerCompose }} up -d",
+					Command: "{{ .PodmanCompose }} up -d",
 				},
 				{
 					Name:    "up (attached)",
-					Command: "{{ .DockerCompose }} up",
+					Command: "{{ .PodmanCompose }} up",
 					Attach:  true,
 				},
 				{
 					Name:    "stop",
-					Command: "{{ .DockerCompose }} stop",
+					Command: "{{ .PodmanCompose }} stop",
 				},
 				{
 					Name:    "pull",
-					Command: "{{ .DockerCompose }} pull",
+					Command: "{{ .PodmanCompose }} pull",
 					Attach:  true,
 				},
 				{
 					Name:    "build",
-					Command: "{{ .DockerCompose }} build --parallel --force-rm",
+					Command: "{{ .PodmanCompose }} build --parallel --force-rm",
 					Attach:  true,
 				},
 				{
 					Name:    "down",
-					Command: "{{ .DockerCompose }} down",
+					Command: "{{ .PodmanCompose }} down",
 				},
 				{
 					Name:    "down with volumes",
-					Command: "{{ .DockerCompose }} down --volumes",
+					Command: "{{ .PodmanCompose }} down --volumes",
 				},
 				{
 					Name:    "down with images",
-					Command: "{{ .DockerCompose }} down --rmi all",
+					Command: "{{ .PodmanCompose }} down --rmi all",
 				},
 				{
 					Name:    "down with volumes and images",
-					Command: "{{ .DockerCompose }} down --volumes --rmi all",
+					Command: "{{ .PodmanCompose }} down --volumes --rmi all",
 				},
 			},
 			Containers: []CustomCommand{},
@@ -477,13 +485,29 @@ func GetDefaultConfig() UserConfig {
 	}
 }
 
-// AppConfig contains the base configuration fields required for lazydocker.
+func normalizeCommandTemplates(commandTemplates *CommandTemplatesConfig) {
+	if commandTemplates.Podman == "" {
+		commandTemplates.Podman = "podman"
+	}
+
+	if commandTemplates.PodmanCompose == "" {
+		commandTemplates.PodmanCompose = commandTemplates.DockerCompose
+	}
+
+	if commandTemplates.PodmanCompose == "" {
+		commandTemplates.PodmanCompose = "podman compose"
+	}
+
+	commandTemplates.DockerCompose = commandTemplates.PodmanCompose
+}
+
+// AppConfig contains the base configuration fields required for lazypodman.
 type AppConfig struct {
 	Debug       bool   `long:"debug" env:"DEBUG" default:"false"`
 	Version     string `long:"version" env:"VERSION" default:"unversioned"`
 	Commit      string `long:"commit" env:"COMMIT"`
 	BuildDate   string `long:"build-date" env:"BUILD_DATE"`
-	Name        string `long:"name" env:"NAME" default:"lazydocker"`
+	Name        string `long:"name" env:"NAME" default:"lazypodman"`
 	BuildSource string `long:"build-source" env:"BUILD_SOURCE" default:""`
 	UserConfig  *UserConfig
 	ConfigDir   string
@@ -503,9 +527,13 @@ func NewAppConfig(name, version, commit, date string, buildSource string, debugg
 		return nil, err
 	}
 
-	// Pass compose files as individual -f flags to docker compose
+	normalizeCommandTemplates(&userConfig.CommandTemplates)
+
+	// Pass compose files as individual -f flags to the configured compose command.
 	if len(composeFiles) > 0 {
-		userConfig.CommandTemplates.DockerCompose += " -f " + strings.Join(composeFiles, " -f ")
+		composeCommand := userConfig.CommandTemplates.PodmanCompose + " -f " + strings.Join(composeFiles, " -f ")
+		userConfig.CommandTemplates.PodmanCompose = composeCommand
+		userConfig.CommandTemplates.DockerCompose = composeCommand
 	}
 
 	appConfig := &AppConfig{

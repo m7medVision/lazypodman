@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jesseduffield/lazydocker/pkg/cheatsheet"
+	"github.com/mohammed/lazypodman/pkg/cheatsheet"
 )
 
 func main() {

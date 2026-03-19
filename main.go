@@ -11,9 +11,9 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/integrii/flaggy"
-	"github.com/jesseduffield/lazydocker/pkg/app"
-	"github.com/jesseduffield/lazydocker/pkg/config"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/app"
+	"github.com/mohammed/lazypodman/pkg/config"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/jesseduffield/yaml"
 	"github.com/samber/lo"
 )
@@ -45,14 +45,14 @@ func main() {
 		runtime.GOARCH,
 	)
 
-	flaggy.SetName("lazydocker")
-	flaggy.SetDescription("The lazier way to manage everything docker")
-	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/jesseduffield/lazydocker"
+	flaggy.SetName("lazypodman")
+	flaggy.SetDescription("The lazier way to manage everything podman")
+	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/mohammed/lazypodman"
 
 	flaggy.Bool(&configFlag, "c", "config", "Print the current default config")
 	flaggy.Bool(&debuggingFlag, "d", "debug", "a boolean")
 	flaggy.StringSlice(&composeFiles, "f", "file", "Specify alternate compose files")
-	flaggy.String(&projectName, "p", "project", "Specify a docker compose project name")
+	flaggy.String(&projectName, "p", "project", "Specify a podman compose project name")
 	flaggy.SetVersion(info)
 
 	flaggy.Parse()
@@ -73,7 +73,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	appConfig, err := config.NewAppConfig("lazydocker", version, commit, date, buildSource, debuggingFlag, composeFiles, projectDir, projectName)
+	appConfig, err := config.NewAppConfig("lazypodman", version, commit, date, buildSource, debuggingFlag, composeFiles, projectDir, projectName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

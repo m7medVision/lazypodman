@@ -2,9 +2,9 @@
 
 ## Opening The User Config
 
-The location of the user config will differ depending on your OS. You can open it via lazydocker by opening the application, clicking on the 'project' panel at the top left and pressing 'o' (or pressing 'e' if your files open in vim).
+The location of the user config will differ depending on your OS. You can open it via lazypodman by opening the application, clicking on the 'project' panel at the top left and pressing 'o' (or pressing 'e' if your files open in vim).
 
-Changes to the user config will only take place after closing and re-opening lazydocker
+Changes to the user config will only take place after closing and re-opening lazypodman
 
 ### Locations:
 
@@ -65,23 +65,24 @@ logs:
   since: '60m' # set to '' to show all logs
   tail: '' # set to 200 to show last 200 lines of logs
 commandTemplates:
-  dockerCompose: docker compose # Determines the Docker Compose command to run, referred to as .DockerCompose in commandTemplates
-  restartService: '{{ .DockerCompose }} restart {{ .Service.Name }}'
-  up:  '{{ .DockerCompose }} up -d'
-  down: '{{ .DockerCompose }} down'
-  downWithVolumes: '{{ .DockerCompose }} down --volumes'
-  upService:  '{{ .DockerCompose }} up -d {{ .Service.Name }}'
-  startService: '{{ .DockerCompose }} start {{ .Service.Name }}'
-  stopService: '{{ .DockerCompose }} stop {{ .Service.Name }}'
-  serviceLogs: '{{ .DockerCompose }} logs --since=60m --follow {{ .Service.Name }}'
-  viewServiceLogs: '{{ .DockerCompose }} logs --follow {{ .Service.Name }}'
-  rebuildService: '{{ .DockerCompose }} up -d --build {{ .Service.Name }}'
-  recreateService: '{{ .DockerCompose }} up -d --force-recreate {{ .Service.Name }}'
-  allLogs: '{{ .DockerCompose }} logs --tail=300 --follow'
-  viewAlLogs: '{{ .DockerCompose }} logs'
-  dockerComposeConfig: '{{ .DockerCompose }} config'
-  checkDockerComposeConfig: '{{ .DockerCompose }} config --quiet'
-  serviceTop: '{{ .DockerCompose }} top {{ .Service.Name }}'
+  podman: podman # Base engine command, referred to as .Podman in templates
+  podmanCompose: podman compose # Compose command, referred to as .PodmanCompose in templates
+  restartService: '{{ .PodmanCompose }} restart {{ .Service.Name }}'
+  up:  '{{ .PodmanCompose }} up -d'
+  down: '{{ .PodmanCompose }} down'
+  downWithVolumes: '{{ .PodmanCompose }} down --volumes'
+  upService:  '{{ .PodmanCompose }} up -d {{ .Service.Name }}'
+  startService: '{{ .PodmanCompose }} start {{ .Service.Name }}'
+  stopService: '{{ .PodmanCompose }} stop {{ .Service.Name }}'
+  serviceLogs: '{{ .PodmanCompose }} logs --since=60m --follow {{ .Service.Name }}'
+  viewServiceLogs: '{{ .PodmanCompose }} logs --follow {{ .Service.Name }}'
+  rebuildService: '{{ .PodmanCompose }} up -d --build {{ .Service.Name }}'
+  recreateService: '{{ .PodmanCompose }} up -d --force-recreate {{ .Service.Name }}'
+  allLogs: '{{ .PodmanCompose }} logs --tail=300 --follow'
+  viewAlLogs: '{{ .PodmanCompose }} logs'
+  dockerComposeConfig: '{{ .PodmanCompose }} config'
+  checkDockerComposeConfig: '{{ .PodmanCompose }} config --quiet'
+  serviceTop: '{{ .PodmanCompose }} top {{ .Service.Name }}'
 oS:
   openCommand: open {{filename}}
   openLinkCommand: open {{link}}
@@ -95,7 +96,13 @@ stats:
       color: green
 ```
 
-## To see what all of the config options mean, and what other options you can set, see [here](https://godoc.org/github.com/jesseduffield/lazydocker/pkg/config)
+## Podman-specific notes
+
+- The app defaults to Podman sockets and Podman commands.
+- `DOCKER_HOST` is still the main endpoint override because Podman exposes a Docker-compatible API.
+- Compose support depends on the provider behind `podman compose`, so `config`, `config --quiet`, `config --services`, and `top` may vary.
+
+## To see what all of the config options mean, and what other options you can set, see the package docs in `pkg/config`.
 
 ## Color Attributes:
 

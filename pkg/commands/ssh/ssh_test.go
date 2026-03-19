@@ -3,6 +3,7 @@ package ssh
 import (
 	"context"
 	"io"
+	"net/url"
 	"os/exec"
 	"testing"
 
@@ -64,7 +65,7 @@ func TestSSHHandlerHandleSSHDockerHost(t *testing.T) {
 
 			startCmdCount := 0
 			startCmd := func(cmd *exec.Cmd) error {
-				assert.EqualValues(t, []string{"ssh", "-L", "/tmp/lazydocker-ssh-tunnel-12345/dockerhost.sock:/var/run/docker.sock", "192.168.5.178", "-N"}, cmd.Args)
+				assert.EqualValues(t, []string{"ssh", "-L", "/tmp/lazydocker-ssh-tunnel-12345/dockerhost.sock:/run/podman/podman.sock", "192.168.5.178", "-N"}, cmd.Args)
 
 				startCmdCount++
 
@@ -98,6 +99,11 @@ func TestSSHHandlerHandleSSHDockerHost(t *testing.T) {
 			assert.Equal(t, s.expectedStartCmdCount, startCmdCount)
 		})
 	}
+}
+
+func TestRemoteSocketPath(t *testing.T) {
+	assert.Equal(t, "/run/podman/podman.sock", remoteSocketPath(&url.URL{Host: "example.com"}))
+	assert.Equal(t, "/run/user/1000/podman/podman.sock", remoteSocketPath(&url.URL{Host: "example.com", Path: "/run/user/1000/podman/podman.sock"}))
 }
 
 type fakeCmdKiller struct{}

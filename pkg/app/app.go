@@ -4,12 +4,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/jesseduffield/lazydocker/pkg/commands"
-	"github.com/jesseduffield/lazydocker/pkg/config"
-	"github.com/jesseduffield/lazydocker/pkg/gui"
-	"github.com/jesseduffield/lazydocker/pkg/i18n"
-	"github.com/jesseduffield/lazydocker/pkg/log"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/commands"
+	"github.com/mohammed/lazypodman/pkg/config"
+	"github.com/mohammed/lazypodman/pkg/gui"
+	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/mohammed/lazypodman/pkg/log"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,7 +41,7 @@ func NewApp(config *config.AppConfig) (*App, error) {
 	}
 	app.OSCommand = commands.NewOSCommand(app.Log, config)
 
-	// here is the place to make use of the docker-compose.yml file in the current directory
+	// here is the place to make use of the compose file in the current directory
 
 	app.DockerCommand, err = commands.NewDockerCommand(app.Log, app.OSCommand, app.Tr, app.Config, app.ErrorChan)
 	if err != nil {

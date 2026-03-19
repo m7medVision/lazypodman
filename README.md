@@ -40,7 +40,7 @@
   <img src="https://user-images.githubusercontent.com/8456633/59972109-8e9c8480-95cc-11e9-8350-38f7f86ba76d.png">
 </p>
 
-A simple terminal UI for both docker and docker-compose, written in Go with the [gocui](https://github.com/jroimartin/gocui 'gocui') library.
+A simple terminal UI for Podman and Podman Compose, written in Go with the [gocui](https://github.com/jroimartin/gocui 'gocui') library.
 
 ![CI](https://github.com/jesseduffield/lazygit/workflows/Continuous%20Integration/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jesseduffield/lazydocker)](https://goreportcard.com/report/github.com/jesseduffield/lazydocker)
@@ -86,8 +86,23 @@ Memorising docker commands is hard. Memorising aliases is slightly less hard. Ke
 
 ## Requirements
 
-- Docker >= **29.0.0** (API >= **1.24**)
-- Docker-Compose >= **1.23.2** (optional)
+- Podman with the Docker-compatible API socket enabled
+- A Compose provider available through `podman compose`
+
+## Podman Notes
+
+- `lazypodman` is Podman-first; Docker fallback is not the goal of this fork.
+- Local sockets default to Podman paths such as `unix:///run/user/$UID/podman/podman.sock` and `unix:///run/podman/podman.sock`.
+- You can override the engine endpoint with `DOCKER_HOST` because the app still uses the Docker-compatible client API exposed by Podman.
+- Compose behavior depends on the provider behind `podman compose`, so commands like `config` and `top` may vary.
+
+Example rootless setup:
+
+```sh
+systemctl --user enable --now podman.socket
+export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
+lazypodman
+```
 
 ## Installation
 

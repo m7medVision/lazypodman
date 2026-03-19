@@ -7,11 +7,11 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazydocker/pkg/commands"
-	"github.com/jesseduffield/lazydocker/pkg/gui/panels"
-	"github.com/jesseduffield/lazydocker/pkg/gui/presentation"
-	"github.com/jesseduffield/lazydocker/pkg/tasks"
-	"github.com/jesseduffield/lazydocker/pkg/utils"
+	"github.com/mohammed/lazypodman/pkg/commands"
+	"github.com/mohammed/lazypodman/pkg/gui/panels"
+	"github.com/mohammed/lazypodman/pkg/gui/presentation"
+	"github.com/mohammed/lazypodman/pkg/tasks"
+	"github.com/mohammed/lazypodman/pkg/utils"
 	"github.com/jesseduffield/yaml"
 )
 
@@ -90,14 +90,14 @@ func (gui *Gui) refreshProject() error {
 	return gui.Panels.Projects.RerenderList()
 }
 
-// getDiscoveredProjects returns all docker compose projects by examining container labels.
-// The local project (from docker-compose.yml in the current directory) is included if
+// getDiscoveredProjects returns all compose projects by examining container labels.
+// The local project (from the current directory or explicit compose config) is included if
 // it has running containers or if InDockerComposeProject is true.
 func (gui *Gui) getDiscoveredProjects() []*commands.Project {
 	containers := gui.Panels.Containers.List.GetAllItems()
 	projectNames := gui.DockerCommand.GetProjectNames(containers)
 
-	// If we're in a docker compose project but it has no running containers,
+	// If we're in a compose project but it has no running containers,
 	// still include it. We don't fall back to the directory name here to avoid
 	// briefly flashing the wrong project name on startup.
 	localName := gui.DockerCommand.LocalProjectName
@@ -143,13 +143,13 @@ func (gui *Gui) creditsStr() string {
 
 	return strings.Join(
 		[]string{
-			lazydockerTitle(),
+			lazypodmanTitle(),
 			"Copyright (c) 2019 Jesse Duffield",
-			"Keybindings: https://github.com/jesseduffield/lazydocker/blob/master/docs/keybindings",
-			"Config Options: https://github.com/jesseduffield/lazydocker/blob/master/docs/Config.md",
-			"Raise an Issue: https://github.com/jesseduffield/lazydocker/issues",
+			"Keybindings: docs/keybindings",
+			"Config Options: docs/Config.md",
+			"Raise an Issue: see the lazypodman issue tracker",
 			utils.ColoredString("Buy Jesse a coffee: https://github.com/sponsors/jesseduffield", color.FgMagenta), // caffeine ain't free
-			"Here's your lazydocker config when merged in with the defaults (you can open your config by pressing 'o'):",
+			"Here's your lazypodman config when merged in with the defaults (you can open your config by pressing 'o'):",
 			utils.ColoredYamlString(configBuf.String()),
 		}, "\n\n")
 }
@@ -187,9 +187,15 @@ func (gui *Gui) renderAllLogs(project *commands.Project) tasks.TaskFunc {
 }
 
 func (gui *Gui) renderDockerComposeConfig(project *commands.Project) tasks.TaskFunc {
+	if !gui.DockerCommand.InDockerComposeProject {
+		return gui.NewSimpleRenderStringTask(func() string {
+			return "Compose config is unavailable for this Podman compose provider or directory"
+		})
+	}
+
 	if project != nil && project.Name != gui.DockerCommand.LocalProjectName {
 		return gui.NewSimpleRenderStringTask(func() string {
-			return "Compose config is not available for non-local projects"
+			return "Compose config is only available for the local Podman project"
 		})
 	}
 	return gui.NewSimpleRenderStringTask(func() string {
@@ -205,7 +211,7 @@ func (gui *Gui) handleEditConfig(g *gocui.Gui, v *gocui.View) error {
 	return gui.editFile(gui.Config.ConfigFilename())
 }
 
-func lazydockerTitle() string {
+func lazypodmanTitle() string {
 	return `
    _                     _            _
   | |                   | |          | |
@@ -218,7 +224,7 @@ func lazydockerTitle() string {
 `
 }
 
-// handleViewAllLogs switches to a subprocess viewing all the logs from docker-compose
+// handleViewAllLogs switches to a subprocess viewing all the logs from the compose project
 func (gui *Gui) handleViewAllLogs(g *gocui.Gui, v *gocui.View) error {
 	project, _ := gui.Panels.Projects.GetSelectedItem()
 	c, err := gui.DockerCommand.ViewAllLogs(project)
