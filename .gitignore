@@ -1,4 +1,6 @@
 lazydocker*
+main
+.tmp/
 TODO.md
 Lazydocker.code-workspace
 .vscode
