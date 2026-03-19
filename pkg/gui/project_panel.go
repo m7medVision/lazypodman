@@ -7,12 +7,12 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/jesseduffield/gocui"
+	"github.com/jesseduffield/yaml"
 	"github.com/m7medVision/lazypodman/pkg/commands"
 	"github.com/m7medVision/lazypodman/pkg/gui/panels"
 	"github.com/m7medVision/lazypodman/pkg/gui/presentation"
 	"github.com/m7medVision/lazypodman/pkg/tasks"
 	"github.com/m7medVision/lazypodman/pkg/utils"
-	"github.com/jesseduffield/yaml"
 )
 
 func (gui *Gui) getProjectPanel() *panels.SideListPanel[*commands.Project] {

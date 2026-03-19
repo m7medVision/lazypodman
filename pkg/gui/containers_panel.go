@@ -508,19 +508,18 @@ func (gui *Gui) handleRemoveContainers() error {
 }
 
 func (gui *Gui) handleContainersBulkCommand(g *gocui.Gui, v *gocui.View) error {
-	baseBulkCommands := []config.CustomCommand{
-		{
-			Name:             gui.Tr.StopAllContainers,
-			InternalFunction: gui.handleStopContainers,
-		},
-		{
-			Name:             gui.Tr.RemoveAllContainers,
-			InternalFunction: gui.handleRemoveContainers,
-		},
-		{
-			Name:             gui.Tr.PruneContainers,
-			InternalFunction: gui.handlePruneContainers,
-		},
+	baseBulkCommands := make([]config.CustomCommand, 3, 3+len(gui.Config.UserConfig.BulkCommands.Containers))
+	baseBulkCommands[0] = config.CustomCommand{
+		Name:             gui.Tr.StopAllContainers,
+		InternalFunction: gui.handleStopContainers,
+	}
+	baseBulkCommands[1] = config.CustomCommand{
+		Name:             gui.Tr.RemoveAllContainers,
+		InternalFunction: gui.handleRemoveContainers,
+	}
+	baseBulkCommands[2] = config.CustomCommand{
+		Name:             gui.Tr.PruneContainers,
+		InternalFunction: gui.handlePruneContainers,
 	}
 
 	bulkCommands := append(baseBulkCommands, gui.Config.UserConfig.BulkCommands.Containers...)

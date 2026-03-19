@@ -20,7 +20,7 @@ func Check() {
 	if err != nil {
 		log.Fatalf("Error occurred while checking if cheatsheets are up to date: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	if err = os.Mkdir(tmpDir, 0o700); err != nil {
 		log.Fatalf("Error occurred while checking if cheatsheets are up to date: %v", err)

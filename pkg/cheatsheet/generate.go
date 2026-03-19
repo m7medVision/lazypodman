@@ -39,7 +39,7 @@ func generateAtDir(dir string) {
 	}
 
 	for lang := range i18n.GetTranslationSets() {
-		os.Setenv("LC_ALL", lang)
+		_ = os.Setenv("LC_ALL", lang)
 		mApp, _ := app.NewApp(mConfig)
 		mApp.Gui.SetupFakeGui()
 

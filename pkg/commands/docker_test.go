@@ -22,15 +22,13 @@ func TestNewDockerClientVersionNegotiation(t *testing.T) {
 	originalAPIVersion := os.Getenv("DOCKER_API_VERSION")
 	defer func() {
 		if originalAPIVersion == "" {
-			os.Unsetenv("DOCKER_API_VERSION")
+			_ = os.Unsetenv("DOCKER_API_VERSION")
 		} else {
-			os.Setenv("DOCKER_API_VERSION", originalAPIVersion)
+			_ = os.Setenv("DOCKER_API_VERSION", originalAPIVersion)
 		}
 	}()
 
-	// Set DOCKER_API_VERSION to an old version that would cause
-	// "client version 1.25 is too old" errors if negotiation is disabled
-	os.Setenv("DOCKER_API_VERSION", "1.25")
+	_ = os.Setenv("DOCKER_API_VERSION", "1.25")
 
 	t.Run("FromEnv locks version preventing negotiation", func(t *testing.T) {
 		// This demonstrates the problematic behavior we're avoiding.
@@ -41,7 +39,7 @@ func TestNewDockerClientVersionNegotiation(t *testing.T) {
 			client.WithAPIVersionNegotiation(),
 		)
 		assert.NoError(t, err)
-		defer cli.Close()
+		defer func() { _ = cli.Close() }()
 
 		// Version is locked to the env var value
 		assert.Equal(t, "1.25", cli.ClientVersion())
@@ -53,7 +51,7 @@ func TestNewDockerClientVersionNegotiation(t *testing.T) {
 		// (unix socket on Linux/macOS, named pipe on Windows).
 		cli, err := newDockerClient(client.DefaultDockerHost)
 		assert.NoError(t, err)
-		defer cli.Close()
+		defer func() { _ = cli.Close() }()
 
 		// Version is NOT locked to the env var value (1.25).
 		// Instead, it uses the library's default version and will negotiate

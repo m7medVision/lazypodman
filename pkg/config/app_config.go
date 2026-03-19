@@ -596,7 +596,7 @@ func loadUserConfig(configDir string, base *UserConfig) (*UserConfig, error) {
 			if err != nil {
 				return nil, err
 			}
-			file.Close()
+			_ = file.Close()
 		} else {
 			return nil, err
 		}

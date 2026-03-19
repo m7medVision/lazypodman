@@ -12,11 +12,11 @@ func TestResolveDefaultDockerHostPrefersExistingPodmanSocket(t *testing.T) {
 	originalRuntimeDir := os.Getenv("XDG_RUNTIME_DIR")
 	originalStat := osStat
 	defer func() {
-		os.Setenv("XDG_RUNTIME_DIR", originalRuntimeDir)
+		_ = os.Setenv("XDG_RUNTIME_DIR", originalRuntimeDir)
 		osStat = originalStat
 	}()
 
-	os.Setenv("XDG_RUNTIME_DIR", "/tmp/test-runtime")
+	_ = os.Setenv("XDG_RUNTIME_DIR", "/tmp/test-runtime")
 	expectedPath := filepath.Join("/tmp/test-runtime", "podman", "podman.sock")
 	osStat = func(name string) (os.FileInfo, error) {
 		if name == expectedPath {
@@ -34,11 +34,11 @@ func TestResolveDefaultDockerHostFallsBackToRootfulPodmanSocket(t *testing.T) {
 	originalRuntimeDir := os.Getenv("XDG_RUNTIME_DIR")
 	originalStat := osStat
 	defer func() {
-		os.Setenv("XDG_RUNTIME_DIR", originalRuntimeDir)
+		_ = os.Setenv("XDG_RUNTIME_DIR", originalRuntimeDir)
 		osStat = originalStat
 	}()
 
-	os.Unsetenv("XDG_RUNTIME_DIR")
+	_ = os.Unsetenv("XDG_RUNTIME_DIR")
 	osStat = func(name string) (os.FileInfo, error) {
 		return nil, os.ErrNotExist
 	}

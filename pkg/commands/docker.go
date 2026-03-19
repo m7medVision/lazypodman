@@ -179,7 +179,7 @@ func NewDockerCommand(log *logrus.Entry, osCommand *OSCommand, tr *i18n.Translat
 	//       `SSHHandler.HandleSSHDockerHost()` to create a local unix socket tunneled
 	//       over SSH to the specified ssh host.
 	if strings.HasPrefix(dockerHost, "ssh://") {
-		os.Setenv(dockerHostEnvKey, dockerHost)
+		_ = os.Setenv(dockerHostEnvKey, dockerHost)
 	}
 
 	tunnelCloser, err := ssh.NewSSHHandler(osCommand).HandleSSHDockerHost()
@@ -253,7 +253,7 @@ func (c *DockerCommand) CreateClientStatMonitor(container *Container) {
 		return
 	}
 
-	defer stream.Body.Close()
+	defer func() { _ = stream.Body.Close() }()
 
 	scanner := bufio.NewScanner(stream.Body)
 	for scanner.Scan() {

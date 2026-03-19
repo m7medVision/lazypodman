@@ -57,7 +57,7 @@ func getHistoryResponseItemDisplayStrings(layer image.HistoryResponseItem) []str
 		createdBy = utils.ColoredString(split[0], color.FgYellow) + " " + strings.Join(split[1:], " ")
 	}
 
-	createdBy = strings.Replace(createdBy, "\t", " ", -1)
+	createdBy = strings.ReplaceAll(createdBy, "\t", " ")
 
 	size := utils.FormatBinaryBytes(int(layer.Size))
 	sizeColor := color.FgWhite
@@ -84,7 +84,8 @@ func (i *Image) RenderHistory() (string, error) {
 		return getHistoryResponseItemDisplayStrings(layer)
 	})
 
-	headers := [][]string{{"ID", "TAG", "SIZE", "COMMAND"}}
+	headers := make([][]string, 1, 1+len(tableBody))
+	headers[0] = []string{"ID", "TAG", "SIZE", "COMMAND"}
 	table := append(headers, tableBody...)
 
 	return utils.RenderTable(table)

@@ -108,8 +108,8 @@ func TestRemoteSocketPath(t *testing.T) {
 
 type fakeCmdKiller struct{}
 
-func (self *fakeCmdKiller) Kill(cmd *exec.Cmd) error {
+func (f *fakeCmdKiller) Kill(cmd *exec.Cmd) error {
 	return nil
 }
 
-func (self *fakeCmdKiller) PrepareForChildren(cmd *exec.Cmd) {}
+func (f *fakeCmdKiller) PrepareForChildren(cmd *exec.Cmd) {}

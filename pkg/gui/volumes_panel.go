@@ -177,11 +177,10 @@ func (gui *Gui) handleVolumesCustomCommand(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) handleVolumesBulkCommand(g *gocui.Gui, v *gocui.View) error {
-	baseBulkCommands := []config.CustomCommand{
-		{
-			Name:             gui.Tr.PruneVolumes,
-			InternalFunction: gui.handlePruneVolumes,
-		},
+	baseBulkCommands := make([]config.CustomCommand, 1, 1+len(gui.Config.UserConfig.BulkCommands.Volumes))
+	baseBulkCommands[0] = config.CustomCommand{
+		Name:             gui.Tr.PruneVolumes,
+		InternalFunction: gui.handlePruneVolumes,
 	}
 
 	bulkCommands := append(baseBulkCommands, gui.Config.UserConfig.BulkCommands.Volumes...)

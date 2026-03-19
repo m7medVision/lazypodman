@@ -242,7 +242,7 @@ func (self *SideListPanel[T]) RerenderList() error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprint(self.View, renderedTable)
+		_, _ = fmt.Fprint(self.View, renderedTable)
 
 		if self.OnRerender != nil {
 			if err := self.OnRerender(); err != nil {

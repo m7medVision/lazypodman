@@ -95,7 +95,7 @@ func (gui *Gui) renderLogsToStdout(container *commands.Container) {
 
 func (gui *Gui) promptToReturn() {
 	if !gui.Config.UserConfig.Gui.ReturnImmediately {
-		fmt.Fprintf(os.Stdout, "\n\n%s", utils.ColoredString(gui.Tr.PressEnterToReturn, color.FgGreen))
+		_, _ = fmt.Fprintf(os.Stdout, "\n\n%s", utils.ColoredString(gui.Tr.PressEnterToReturn, color.FgGreen))
 
 		// wait for enter press
 		if _, err := fmt.Scanln(); err != nil {
@@ -117,7 +117,7 @@ func (gui *Gui) writeContainerLogs(ctr *commands.Container, ctx context.Context,
 		gui.Log.Error(err)
 		return err
 	}
-	defer readCloser.Close()
+	defer func() { _ = readCloser.Close() }()
 
 	if !ctr.DetailsLoaded() {
 		// loop until the details load or context is cancelled, using timer

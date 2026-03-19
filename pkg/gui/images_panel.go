@@ -207,11 +207,10 @@ func (gui *Gui) handleImagesCustomCommand(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) handleImagesBulkCommand(g *gocui.Gui, v *gocui.View) error {
-	baseBulkCommands := []config.CustomCommand{
-		{
-			Name:             gui.Tr.PruneImages,
-			InternalFunction: gui.handlePruneImages,
-		},
+	baseBulkCommands := make([]config.CustomCommand, 1, 1+len(gui.Config.UserConfig.BulkCommands.Images))
+	baseBulkCommands[0] = config.CustomCommand{
+		Name:             gui.Tr.PruneImages,
+		InternalFunction: gui.handlePruneImages,
 	}
 
 	bulkCommands := append(baseBulkCommands, gui.Config.UserConfig.BulkCommands.Images...)

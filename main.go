@@ -11,10 +11,10 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/integrii/flaggy"
+	"github.com/jesseduffield/yaml"
 	"github.com/m7medVision/lazypodman/pkg/app"
 	"github.com/m7medVision/lazypodman/pkg/config"
 	"github.com/m7medVision/lazypodman/pkg/utils"
-	"github.com/jesseduffield/yaml"
 	"github.com/samber/lo"
 )
 
@@ -82,7 +82,9 @@ func main() {
 	if err == nil {
 		err = app.Run()
 	}
-	app.Close()
+	if closeErr := app.Close(); closeErr != nil && err == nil {
+		err = closeErr
+	}
 
 	if err != nil {
 		if errMessage, known := app.KnownError(err); known {

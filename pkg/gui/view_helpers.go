@@ -130,7 +130,7 @@ func (gui *Gui) cleanString(s string) string {
 
 func (gui *Gui) setViewContent(v *gocui.View, s string) error {
 	v.Clear()
-	fmt.Fprint(v, gui.cleanString(s))
+	_, _ = fmt.Fprint(v, gui.cleanString(s))
 	return nil
 }
 
@@ -173,7 +173,7 @@ func (gui *Gui) reRenderString(viewName, s string) {
 }
 
 func (gui *Gui) optionsMapToString(optionsMap map[string]string) string {
-	optionsArray := make([]string, 0)
+	optionsArray := make([]string, 0, len(optionsMap))
 	for key, description := range optionsMap {
 		optionsArray = append(optionsArray, key+": "+description)
 	}

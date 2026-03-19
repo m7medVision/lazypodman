@@ -17,8 +17,8 @@ func (gui *Gui) runSubprocess(cmd *exec.Cmd) error {
 }
 
 func (gui *Gui) runSubprocessWithMessage(cmd *exec.Cmd, msg string) error {
-	gui.Mutexes.SubprocessMutex.Lock()
-	defer gui.Mutexes.SubprocessMutex.Unlock()
+	gui.SubprocessMutex.Lock()
+	defer gui.SubprocessMutex.Unlock()
 
 	if err := gui.g.Suspend(); err != nil {
 		return gui.createErrorPanel(err.Error())
@@ -54,9 +54,9 @@ func (gui *Gui) runCommand(cmd *exec.Cmd, msg string) {
 		}
 	}()
 
-	fmt.Fprintf(os.Stdout, "\n%s\n\n", utils.ColoredString("+ "+strings.Join(cmd.Args, " "), color.FgBlue))
+	_, _ = fmt.Fprintf(os.Stdout, "\n%s\n\n", utils.ColoredString("+ "+strings.Join(cmd.Args, " "), color.FgBlue))
 	if msg != "" {
-		fmt.Fprintf(os.Stdout, "\n%s\n\n", utils.ColoredString(msg, color.FgGreen))
+		_, _ = fmt.Fprintf(os.Stdout, "\n%s\n\n", utils.ColoredString(msg, color.FgGreen))
 	}
 	if err := cmd.Run(); err != nil {
 		// not handling the error explicitly because usually we're going to see it
