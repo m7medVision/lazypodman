@@ -23,10 +23,10 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/imdario/mergo"
-	"github.com/mohammed/lazypodman/pkg/commands/ssh"
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/i18n"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/commands/ssh"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/i18n"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/sasha-s/go-deadlock"
 	"github.com/sirupsen/logrus"
 )
@@ -159,7 +159,7 @@ func inferComposeProject(config *config.AppConfig) (bool, string) {
 // negotiation even when WithAPIVersionNegotiation() is specified.
 // Instead, we explicitly configure only what we need, and rely on proper
 // API version negotiation to support older Docker daemons.
-// See https://github.com/mohammed/lazypodman/issues/715
+// See https://github.com/m7medVision/lazypodman/issues/715
 func newDockerClient(dockerHost string) (*client.Client, error) {
 	return client.NewClientWithOpts(
 		client.WithTLSClientConfigFromEnv(),

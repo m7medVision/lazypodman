@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/jesseduffield/gocui"
-	"github.com/mohammed/lazypodman/pkg/gui/panels"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/gui/panels"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/samber/lo"
 	"github.com/spkg/bom"
 )

@@ -11,9 +11,9 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/integrii/flaggy"
-	"github.com/mohammed/lazypodman/pkg/app"
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/app"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/jesseduffield/yaml"
 	"github.com/samber/lo"
 )
@@ -47,7 +47,7 @@ func main() {
 
 	flaggy.SetName("lazypodman")
 	flaggy.SetDescription("The lazier way to manage everything podman")
-	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/mohammed/lazypodman"
+	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/m7medVision/lazypodman"
 
 	flaggy.Bool(&configFlag, "c", "config", "Print the current default config")
 	flaggy.Bool(&debuggingFlag, "d", "debug", "a boolean")

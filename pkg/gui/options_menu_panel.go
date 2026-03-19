@@ -4,7 +4,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/jesseduffield/gocui"
-	"github.com/mohammed/lazypodman/pkg/gui/types"
+	"github.com/m7medVision/lazypodman/pkg/gui/types"
 )
 
 func (gui *Gui) getBindings(v *gocui.View) []*Binding {

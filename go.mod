@@ -1,4 +1,4 @@
-module github.com/mohammed/lazypodman
+module github.com/m7medVision/lazypodman
 
 go 1.22
 

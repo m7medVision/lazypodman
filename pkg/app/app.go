@@ -4,12 +4,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mohammed/lazypodman/pkg/commands"
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/gui"
-	"github.com/mohammed/lazypodman/pkg/i18n"
-	"github.com/mohammed/lazypodman/pkg/log"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/commands"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/gui"
+	"github.com/m7medVision/lazypodman/pkg/i18n"
+	"github.com/m7medVision/lazypodman/pkg/log"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 

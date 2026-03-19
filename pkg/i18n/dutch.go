@@ -10,7 +10,7 @@ func dutchSet() TranslationSet {
 
 		NoViewMachingNewLineFocusedSwitchStatement: "No view matching newLineFocused switch statement",
 
-		ErrorOccurred:                     "Er is iets fout gegaan! Zou je hier een issue aan willen maken: https://github.com/mohammed/lazypodman/issues",
+		ErrorOccurred:                     "Er is iets fout gegaan! Zou je hier een issue aan willen maken: https://github.com/m7medVision/lazypodman/issues",
 		ConnectionFailed:                  "connectie naar de podman client mislukt. Het zou kunnen dat je de podman client moet herstarten",
 		UnattachableContainerError:        "Container heeft geen ondersteuning voor vastmaken. Je zou de service met het '-it' argument kunnen draaien of stop dit in je `stdin_open: true, tty: true` compose.yml",
 		CannotAttachStoppedContainerError: "Je kan niet een vastgemaakte container stoppen, je moet het eerst starten (dit kan je doen met de 'r' toets) (ja ik ben te leu om dat voor je te doen automatisch)",

@@ -3,8 +3,8 @@ package commands
 import (
 	"io"
 
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/i18n"
 	"github.com/sirupsen/logrus"
 )
 

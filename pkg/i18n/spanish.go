@@ -14,7 +14,7 @@ func spanishSet() TranslationSet {
 		RunningCustomCommandStatus: "ejecutando comando personalizado",
 		RunningBulkCommandStatus:   "ejecutando comando masivo",
 
-		ErrorOccurred:                 "¡Hubo un error! Por favor crea un issue en https://github.com/mohammed/lazypodman/issues",
+		ErrorOccurred:                 "¡Hubo un error! Por favor crea un issue en https://github.com/m7medVision/lazypodman/issues",
 		ConnectionFailed:              "Falló la conexión con el podman client. Quizá necesitas reiniciar tu podman client",
 		UnattachableContainerError:    "Container does not support attaching. You must either run the service with the '-it' flag or use `stdin_open: true, tty: true` in the compose.yml file",
 		WaitingForContainerInfo:       "No podemos proceder hasta que podman nos de más información sobre el contenedor. Inténtalo otra vez en unos segundos.",

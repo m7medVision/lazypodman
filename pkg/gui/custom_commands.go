@@ -2,10 +2,10 @@ package gui
 
 import (
 	"github.com/fatih/color"
-	"github.com/mohammed/lazypodman/pkg/commands"
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/gui/types"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/commands"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/gui/types"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/samber/lo"
 )
 

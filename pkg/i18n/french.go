@@ -13,7 +13,7 @@ func frenchSet() TranslationSet {
 
 		NoViewMachingNewLineFocusedSwitchStatement: "Aucune vue correspondant au switch newLineFocused",
 
-		ErrorOccurred:              "Une erreur s'est produite ! Veuillez créer un rapport d'erreur sur https://github.com/mohammed/lazypodman/issues",
+		ErrorOccurred:              "Une erreur s'est produite ! Veuillez créer un rapport d'erreur sur https://github.com/m7medVision/lazypodman/issues",
 		ConnectionFailed:           "Erreur lors de la connexion au client Podman. Essayez de redémarrer votre client Podman",
 		UnattachableContainerError: "Le conteneur ne peut pas être attaché. Vous devez exécuter le service avec le drapeau 'it' ou bien utiliser `stdin_open: true, tty: true` dans votre fichier compose.yml",
 		WaitingForContainerInfo:    "Le processus ne peut pas continuer avant que Podman ne fournisse plus d'informations. Veuillez réessayer dans quelques instants.",

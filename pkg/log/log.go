@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mohammed/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/config"
 	"github.com/sirupsen/logrus"
 )
 

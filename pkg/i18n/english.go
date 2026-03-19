@@ -154,7 +154,7 @@ func englishSet() TranslationSet {
 
 		NoViewMachingNewLineFocusedSwitchStatement: "No view matching newLineFocused switch statement",
 
-		ErrorOccurred:                     "An error occurred! Please create an issue at https://github.com/mohammed/lazypodman/issues",
+		ErrorOccurred:                     "An error occurred! Please create an issue at https://github.com/m7medVision/lazypodman/issues",
 		ConnectionFailed:                  "connection to podman client failed. You may need to restart the podman client",
 		UnattachableContainerError:        "Container does not support attaching. You must either run the service with the '-it' flag or use `stdin_open: true, tty: true` in the compose.yml file",
 		WaitingForContainerInfo:           "Cannot proceed until podman gives us more information about the container. Please retry in a few moments.",

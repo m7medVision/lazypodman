@@ -7,11 +7,11 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/jesseduffield/gocui"
-	"github.com/mohammed/lazypodman/pkg/commands"
-	"github.com/mohammed/lazypodman/pkg/gui/panels"
-	"github.com/mohammed/lazypodman/pkg/gui/presentation"
-	"github.com/mohammed/lazypodman/pkg/tasks"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/commands"
+	"github.com/m7medVision/lazypodman/pkg/gui/panels"
+	"github.com/m7medVision/lazypodman/pkg/gui/presentation"
+	"github.com/m7medVision/lazypodman/pkg/tasks"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/jesseduffield/yaml"
 )
 

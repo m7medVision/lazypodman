@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/jesseduffield/gocui"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 )
 
 type appStatus struct {

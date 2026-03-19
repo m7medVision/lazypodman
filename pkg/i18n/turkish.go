@@ -10,7 +10,7 @@ func turkishSet() TranslationSet {
 
 		NoViewMachingNewLineFocusedSwitchStatement: "NewLineFocused anahtar deyimi ile eşleşen görünüm yok",
 
-		ErrorOccurred:                     "Bir hata oluştu! Lütfen https://github.com/mohammed/lazypodman/issues adresinden bir hataya ilişkin konu oluşturun",
+		ErrorOccurred:                     "Bir hata oluştu! Lütfen https://github.com/m7medVision/lazypodman/issues adresinden bir hataya ilişkin konu oluşturun",
 		ConnectionFailed:                  "Podman bağlantısı başarısız oldu. Podman' ı yeniden başlatmanız gerekebilir",
 		UnattachableContainerError:        "Konteyner attaching modunda çalışmayı desteklemiyor. Hizmeti '-it' opsiyonu ile çalıştırmanız veya compose.yml dosyasında `stdin_open: true, tty: true` kullanmanız gerekir.",
 		CannotAttachStoppedContainerError: "Durdurulan konteynera bağlanamazsınız, ilk önce başlatmanız gerekir (aslında başlatmayı r tuşu ile yapabilirsiniz) (evet, senin için bunu otomatik olarak yapabilirim fakat çok tembelim) (hata mesajı ile seninle birebir iletişim kurmam çok daha güzel)",

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/m7medVision/lazypodman/pkg/i18n"
 )
 
 func main() {

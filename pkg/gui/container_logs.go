@@ -11,9 +11,9 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/fatih/color"
-	"github.com/mohammed/lazypodman/pkg/commands"
-	"github.com/mohammed/lazypodman/pkg/tasks"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/commands"
+	"github.com/m7medVision/lazypodman/pkg/tasks"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 )
 
 func (gui *Gui) renderContainerLogsToMain(container *commands.Container) tasks.TaskFunc {

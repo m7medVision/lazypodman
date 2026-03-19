@@ -13,10 +13,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/mohammed/lazypodman/pkg/app"
-	"github.com/mohammed/lazypodman/pkg/config"
-	"github.com/mohammed/lazypodman/pkg/gui"
-	"github.com/mohammed/lazypodman/pkg/i18n"
+	"github.com/m7medVision/lazypodman/pkg/app"
+	"github.com/m7medVision/lazypodman/pkg/config"
+	"github.com/m7medVision/lazypodman/pkg/gui"
+	"github.com/m7medVision/lazypodman/pkg/i18n"
 )
 
 const (

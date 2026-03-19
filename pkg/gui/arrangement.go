@@ -2,8 +2,8 @@ package gui
 
 import (
 	"github.com/jesseduffield/lazycore/pkg/boxlayout"
-	"github.com/mohammed/lazypodman/pkg/gui/panels"
-	"github.com/mohammed/lazypodman/pkg/utils"
+	"github.com/m7medVision/lazypodman/pkg/gui/panels"
+	"github.com/m7medVision/lazypodman/pkg/utils"
 	"github.com/mattn/go-runewidth"
 	"github.com/samber/lo"
 )
