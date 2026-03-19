@@ -60,18 +60,6 @@ changelog:
       - "^test:"
       - "^bump"
 
-brews:
-  - tap:
-      owner: jesseduffield
-      name: homebrew-lazydocker
-
-    # Your app's homepage.
-    # Default is empty.
-    homepage: "https://github.com/jesseduffield/lazydocker/"
-
-    # Your app's description.
-    # Default is empty.
-    description: "A simple terminal UI for docker, written in Go"
 #snapcrafts:
 #  - builds:
 #      - snap
