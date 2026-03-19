@@ -122,6 +122,4 @@ jobs:
            find . ! -path "./vendor/*" -name "*.go" -exec gofmt -s -d {} \;
            exit 1
           fi
-      - name: errors
-        run: golangci-lint run
-        if: ${{ failure() }}
+
