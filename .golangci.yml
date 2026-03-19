@@ -1,4 +1,4 @@
-version: 2
+version: "2"
 
 linters:
   enable:
@@ -11,16 +11,11 @@ linters:
     - exhaustive
     - makezero
     - nakedret
-    # - goconst # TODO: enable and fix issues
-  fast: false
-
-linters-settings:
-  exhaustive:
-    default-signifies-exhaustive: true
-
-  nakedret:
-    # the gods will judge me but I just don't like naked returns at all
-    max-func-lines: 0
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
+    nakedret:
+      max-func-lines: 0
 
 run:
   go: '1.21'
